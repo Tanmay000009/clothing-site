@@ -1,24 +1,50 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore'
-import 'firebase/compat/auth';
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
+import "firebase/compat/auth";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCtMFEyKM8s02GgN4vXyymVLeN55cCidx8",
-    authDomain: "clothing-db-10a46.firebaseapp.com",
-    projectId: "clothing-db-10a46",
-    storageBucket: "clothing-db-10a46.appspot.com",
-    messagingSenderId: "799320694607",
-    appId: "1:799320694607:web:18826db8f126289fce6f3a",
-    measurementId: "G-E5FM0CQGHW"
-  };
+  apiKey: "AIzaSyCtMFEyKM8s02GgN4vXyymVLeN55cCidx8",
+  authDomain: "clothing-db-10a46.firebaseapp.com",
+  projectId: "clothing-db-10a46",
+  storageBucket: "clothing-db-10a46.appspot.com",
+  messagingSenderId: "799320694607",
+  appId: "1:799320694607:web:18826db8f126289fce6f3a",
+  measurementId: "G-E5FM0CQGHW",
+};
 
-  firebase.initializeApp(firebaseConfig);
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+  if (!userAuth) return;
 
-  export const auth = firebase.auth();
-  export const firestore = firebase.firestore();
+  const userRef = firestore.doc(`users/${userAuth.uid}`);
 
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({prompt: 'select_account'});
-  export const signInWithGoogle = () => auth.signInWithPopup(provider);
+  const snapShot = await userRef.get();
 
-  export default firebase;
+  if (!snapShot.exists) {
+    const { displayName, email } = userAuth;
+    const createdAt = new Date();
+
+    try {
+      await userRef.set({
+        displayName,
+        email,
+        createdAt,
+        ...additionalData
+      })
+    } catch (e) {
+      console.log("Error creating user", e.message);
+    }
+  }
+
+  return userRef;
+}
+
+firebase.initializeApp(firebaseConfig);
+
+export const auth = firebase.auth();
+export const firestore = firebase.firestore();
+
+const provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
+export const signInWithGoogle = () => auth.signInWithPopup(provider);
+
+export default firebase;
