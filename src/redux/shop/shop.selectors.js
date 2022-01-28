@@ -10,6 +10,8 @@ export const selectCollections = createSelector(
 export const selectCollectionsForPreview = createSelector(
   [selectCollections],
   // Object.keys(object) returns an array of key
+  // we map over it and get the items array
+  // collection overview can use .map on this array
   (collections) => Object.keys(collections).map((key) => collections[key])
 );
 
