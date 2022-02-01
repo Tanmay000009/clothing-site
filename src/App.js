@@ -20,6 +20,19 @@ class App extends React.Component {
 
   componentDidMount() {
     const { setCurrentUser } = this.props;
+
+    // an observer here has subscribed to auth lib observables to lookout for any updates/changes
+    // there.
+    //
+    // observer essentially passes a middleware through which it can lookout for changes
+    // and update here
+    //
+    // when the component unmounts we need to unsubscirbe as that stream of data
+    // holds no meaning for us now
+    //
+    // here auth library returns a function for observer here to unsubscribe from
+    // stream of events in the auth library (like user changes)
+    //
     this.unSubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
