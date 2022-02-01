@@ -26,11 +26,31 @@ class ShopPage extends React.Component {
     const { updateCollections } = this.props;
     const collectionRef = firestore.collection("collections");
 
-    collectionRef.onSnapshot(async (snapshot) => {
+    // or we can make a rest api call
+    // but reponse is extremely nested so better to use of any of below methods
+    // fetch(
+    //   "https://firestore.googleapis.com/v1/projects/clothing-db-10a46/databases/(default)/documents/collections"
+    // ).then((response) => response.json());
+
+    // we migrate to promises
+    // only diff is now we wont auto-render and re-fetch it if there's any update on
+    // db, as we dont subscribe now to it
+
+    //  here we use CollectionRef to make a call
+
+    collectionRef.get().then((snapshot) => {
       const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
       updateCollections(collectionsMap);
       this.setState({ loading: false });
     });
+
+    // this.unSubscribeFromSnapshot = collectionRef.onSnapshot(
+    //   async (snapshot) => {
+    //     const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
+    //     updateCollections(collectionsMap);
+    //     this.setState({ loading: false });
+    //   }
+    // );
   }
 
   render() {
