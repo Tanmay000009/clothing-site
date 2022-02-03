@@ -10,12 +10,20 @@ import {
   createUserProfileDocument,
 } from "../../firebase/firebase.utils";
 
+export function* getSnapshotFromUserAuth(userAuth) {
+  try {
+    const userRef = yield call(createUserProfileDocument, userAuth);
+    const userSnapShot = yield userRef.get();
+    yield put(signInSuccess({ id: userSnapShot.id, ...userSnapShot.data }));
+  } catch (e) {
+    yield put(signInFailure(e));
+  }
+}
+
 export function* signInWithGoogle() {
   try {
     const { user } = yield auth.signInWithPopup(googleProvider);
-    const userRef = yield call(createUserProfileDocument, user);
-    const userSnapShot = yield userRef.get();
-    yield put(signInSuccess({ id: userSnapShot.id, ...userSnapShot.data }));
+    yield getSnapshotFromUserAuth(user);
   } catch (e) {
     yield put(signInFailure(e));
   }
@@ -24,9 +32,7 @@ export function* signInWithGoogle() {
 export function* signInWithEmail({ payload: { email, password } }) {
   try {
     const { user } = yield auth.signInWithEmailAndPassword(email, password);
-    const userRef = yield call(createUserProfileDocument, user);
-    const userSnapShot = yield userRef.get();
-    yield put(signInSuccess({ id: userSnapShot.id, ...userSnapShot.data }));
+    yield getSnapshotFromUserAuth(user);
   } catch (e) {
     yield put(signInFailure(e));
   }
