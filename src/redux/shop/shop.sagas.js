@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from "redux-saga/effects";
+import { all, call, put, takeLatest } from "redux-saga/effects";
 
 import {
   firestore,
@@ -79,3 +79,7 @@ export function* fetchCollectionsStart() {
 // whereas, takeEvery is non blocking as it invoking a new set of funtion every time
 
 //
+
+export function* shopSagas() {
+  yield all([call(fetchCollectionsStart)]);
+}
