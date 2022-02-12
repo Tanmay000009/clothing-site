@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
 import "./App.css";
@@ -14,15 +14,21 @@ import CheckoutPage from "./pages/checkout/checkout.component";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 import { checkUserSession } from "./redux/user/user.actions";
 
-const App = ({ checkUserSession, currentUser }) => {
-  useEffect(() => {
-    checkUserSession();
-    // here we know checkUserSession is a function, so wont change
-    // it in a way behaves like component did mount
+const App = () => {
+  // it'll always run when the selector function passed to
+  // to it will receive a new value
 
-    // since we wanna run this only once, when component renders
-    // it full fills our usecase
-  }, [checkUserSession]);
+  // useSelector can be called multiple times
+  const currentUser = useSelector(selectCurrentUser);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(checkUserSession());
+    // since we making the effect depend on dispatch
+    // this efffect will work only 1 time when this
+    // component mounts
+  }, [dispatch]);
 
   return (
     <div>
@@ -41,12 +47,4 @@ const App = ({ checkUserSession, currentUser }) => {
   );
 };
 
-const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  checkUserSession: () => dispatch(checkUserSession()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;
