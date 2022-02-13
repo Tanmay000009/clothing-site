@@ -1,14 +1,14 @@
-import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
-import path from "path";
-import { error } from "console";
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const path = require("path");
+const { error } = require("console");
 
 if (process.env.NODE_ENV !== "production") {
-  import "dotenv/config";
+  require("dotenv").config();
 }
 
-import Stripe from "stripe";
+const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
